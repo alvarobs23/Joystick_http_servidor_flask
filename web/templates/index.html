@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Joystick Position</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: sans-serif;
+      padding-top: 40px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    #area {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      background: #eee;
+      border: 2px solid #333;
+      border-radius: 8px;
+    }
+    #dot {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: red;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+    #coords {
+      margin-top: 15px;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Indicador de Posição do Joystick</h1>
+  <div id="area">
+    <div id="dot" style="left:50%; top:50%;"></div>
+  </div>
+  <div id="coords">X: 50% — Y: 50%</div>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script>
+    const socket = io();
+    const dot    = document.getElementById('dot');
+    const coords = document.getElementById('coords');
+    const area   = document.getElementById('area');
+
+    socket.on('joystick', data => {
+      const x = data.x; // 0–100
+      const y = data.y; // 0–100
+
+      // Calcula posição em pixels
+      const px = x / 100 * area.clientWidth;
+      const py = (100 - y) / 100 * area.clientHeight; // inverte Y para gráfico
+
+      dot.style.left = px + 'px';
+      dot.style.top  = py + 'px';
+
+      coords.textContent = `X: ${x}% — Y: ${y}%`;
+    });
+  </script>
+</body>
+</html>
